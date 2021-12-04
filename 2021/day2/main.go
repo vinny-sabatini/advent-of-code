@@ -13,6 +13,10 @@ import (
 // value of those two multiplied together.
 // Using `small-input.txt`, horizontal = 15, depth = 10, total = 150.
 
+// Day 2 challenge 2 changes the way the inputs are intepreted from part 1
+// up and down simply change the "aim" by the quantity
+// forward will change position by the quantity still, but will also change depth by the quantity times aim
+// Using `small-input.txt`, horizontal = 15, depth = 60, total = 900
 func main() {
 	input, err := os.Open("./input.txt")
 	if err != nil {
@@ -23,6 +27,7 @@ func main() {
 
 	var direction string
 	var quantity int
+	aim := 0
 	depth := 0
 	position := 0
 
@@ -38,11 +43,12 @@ func main() {
 		}
 		switch direction {
 		case "up":
-			depth = depth - quantity
+			aim = aim - quantity
 		case "down":
-			depth = depth + quantity
+			aim = aim + quantity
 		case "forward":
 			position = position + quantity
+			depth = depth + (aim * quantity)
 		}
 	}
 	if err := scanner.Err(); err != nil {
