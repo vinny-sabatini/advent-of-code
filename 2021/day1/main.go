@@ -9,6 +9,13 @@ import (
 
 // Day 1 challenge 1 takes in an input file that has one int per line
 // The goal is to return the number of times the next value increases
+// Using `small-input.txt`, the value is 7.
+
+// Day 1 challenge 2 uses that same input file as challenge 1
+// The goal is to return the number of times a group of 3 lines increases
+// It also must stop when there aren't enough measurements left to create
+// a new three-measurement sum.
+// Using `small-input.txt`, the value is 5.
 func main() {
 	input, err := os.Open("./input.txt")
 	if err != nil {
@@ -19,22 +26,29 @@ func main() {
 
 	scanner := bufio.NewScanner(input)
 
-	var current int
-	previous := -1
+	value1 := 0
+	value2 := 0
+	value3 := 0
+	currentSum := 0
+	previousSum := -1
 	increaseCount := 0
 
 	for scanner.Scan() {
-		current, err = strconv.Atoi(scanner.Text())
+		value1, err = strconv.Atoi(scanner.Text())
 		if err != nil {
 			fmt.Println("Failed to convert string to int", err)
 		}
-		if previous != -1 {
-			if current > previous {
-				increaseCount = increaseCount + 1
+		if value1 > 0 && value2 > 0 && value3 > 0 {
+			currentSum = value1 + value2 + value3
+			if previousSum != -1 {
+				if currentSum > previousSum {
+					increaseCount = increaseCount + 1
+				}
 			}
+			previousSum = currentSum
 		}
-
-		previous = current
+		value3 = value2
+		value2 = value1
 	}
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Failed to scan input:", err)
