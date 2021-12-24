@@ -14,8 +14,13 @@ import (
 // be locationed to spend the least amount of gas assuming moving one crab one
 // spot costs one unit of gas. For example, using small-input.txt, it is cheapest
 // to move the crabs to position 2, and it would cost 37 units of gas.
+//
+// Day 7 part 2 does the same thing, however moving one position costs 1 fuel,
+// moving 2 positions costs 3 (1 + 2), moving 3 positions costs 6 (1+2+3), etc.
+// For example, using small-input.txt, it is cheapest to move the crabs to location
+// 5, and it costs 168 fuel.
 func main() {
-	input, err := os.Open("./small-input.txt")
+	input, err := os.Open("./input.txt")
 	if err != nil {
 		fmt.Println("Failed to open input.txt", err)
 		os.Exit(1)
@@ -48,7 +53,8 @@ func main() {
 		for positionEnd, countEnd := range tracker {
 			positionEndInt, _ := strconv.Atoi(positionEnd)
 			distance := int(math.Abs(float64(positionStart - positionEndInt)))
-			currentCost := distance * countEnd
+			fuelUsed := calculateFuelUsed(distance)
+			currentCost := fuelUsed * countEnd
 			cost[positionStartString] = cost[positionStartString] + currentCost
 		}
 	}
@@ -66,4 +72,12 @@ func main() {
 		}
 	}
 	fmt.Println("Position", cheapestPosition, "Cost", cheapestCost)
+}
+
+func calculateFuelUsed(distance int) int {
+	total := 0
+	for i := 0; i < distance+1; i++ {
+		total += i
+	}
+	return total
 }
