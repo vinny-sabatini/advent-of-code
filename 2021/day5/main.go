@@ -16,6 +16,10 @@ type path struct {
 // The goal is to find how many points have at least 2 lines that cross that
 // given point. For example, on small-input.txt, points 0,9 through 2,9 and
 // points 4,3 and 4,7 have two intersections, so the final answer is 5.
+//
+// Day 5 challenge two does the same thing as challenge one, however you have
+// to count diagonal lines (exactly 45*). On small-input.txt, the final answer
+// is 12.
 func main() {
 	input, err := os.Open("./input.txt")
 	if err != nil {
@@ -41,12 +45,14 @@ func main() {
 	}
 
 	for _, p := range paths {
+		yStart, _ := strconv.Atoi(p.yStart)
+		yFinish, _ := strconv.Atoi(p.yFinish)
+		xStart, _ := strconv.Atoi(p.xStart)
+		xFinish, _ := strconv.Atoi(p.xFinish)
 		if p.xStart == p.xFinish && p.yStart == p.yFinish {
 			point := fmt.Sprintf("%s,%s", p.xStart, p.xFinish)
 			addToHits(point, hits)
 		} else if p.xStart == p.xFinish {
-			yStart, _ := strconv.Atoi(p.yStart)
-			yFinish, _ := strconv.Atoi(p.yFinish)
 			if yStart > yFinish {
 				for i := yFinish; i != yStart+1; i++ {
 					point := fmt.Sprintf("%s,%d", p.xStart, i)
@@ -59,8 +65,6 @@ func main() {
 				}
 			}
 		} else if p.yStart == p.yFinish {
-			xStart, _ := strconv.Atoi(p.xStart)
-			xFinish, _ := strconv.Atoi(p.xFinish)
 			if xStart > xFinish {
 				for i := xFinish; i != xStart+1; i++ {
 					point := fmt.Sprintf("%d,%s", i, p.yStart)
@@ -73,8 +77,29 @@ func main() {
 				}
 			}
 		} else {
-			//fmt.Printf("%s, %s -> %s, %s IS NOT VERTICAL OR HORIZONTAL\n", p.xStart, p.yStart, p.xFinish, p.yFinish)
-			continue
+			var xHits, yHits []string
+			if xStart > xFinish {
+				for i := xStart; i > xFinish-1; i-- {
+					xHits = append(xHits, strconv.Itoa(i))
+				}
+			} else {
+				for i := xStart; i < xFinish+1; i++ {
+					xHits = append(xHits, strconv.Itoa(i))
+				}
+			}
+			if yStart > yFinish {
+				for i := yStart; i > yFinish-1; i-- {
+					yHits = append(yHits, strconv.Itoa(i))
+				}
+			} else {
+				for i := yStart; i < yFinish+1; i++ {
+					yHits = append(yHits, strconv.Itoa(i))
+				}
+			}
+			for i := 0; i < len(xHits); i++ {
+				point := fmt.Sprintf("%s,%s", xHits[i], yHits[i])
+				addToHits(point, hits)
+			}
 		}
 	}
 	counter := 0
