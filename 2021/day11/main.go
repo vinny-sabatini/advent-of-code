@@ -16,6 +16,9 @@ type point struct {
 // in all of the neighboring points increase by 1. After all of the "flashes" are done, one round
 // is complete. The goal is to count how many flashes occur after 100 rounds. In small-input.txt,
 // there are 1656 flashes.
+//
+// Day 11 challenge 2 has to find in which step do all points flash. In small-input.txt, this happens
+// on step 195.
 func main() {
 	input, err := os.Open("./input.txt")
 	if err != nil {
@@ -43,7 +46,7 @@ func main() {
 
 	totalFlashes := 0
 
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 1000; i++ {
 		newFlash := false
 		flashedPoints := make([]point, 0)
 
@@ -108,7 +111,11 @@ func main() {
 			fmt.Println(v)
 		}
 		totalFlashes = totalFlashes + len(flashedPoints)
-		fmt.Println("FLASHED POINTS", flashedPoints)
+		fmt.Println("FLASHED POINTS", flashedPoints, "LENGTH", len(flashedPoints))
+		if len(flashedPoints) == 100 {
+			fmt.Println("WE ARE SYNCED", i+1)
+			break
+		}
 	}
 
 	fmt.Println("Total Flashes", totalFlashes)
