@@ -22,6 +22,9 @@ type fold struct {
 // on the y axis, all points below the line fold up above the line, and if the fold is on the x axis, all
 // points to the right are folded to the left. For small-input.txt, there are 17 unique points after the
 // first fold.
+//
+// Day 13 challenge 2 has you make all of the folds, and then you have to decypher all of the points to figure
+// out what characters should be entered in the machine. For small-input.txt, a square shape is generated.
 func main() {
 	input, err := os.Open("./input.txt")
 	if err != nil {
@@ -66,10 +69,10 @@ func main() {
 				}
 			}
 		}
-		uniquePoints := getUniquePoints(points)
-		fmt.Println("POINTS", uniquePoints, "COUNT", len(uniquePoints))
-		break
+		points = getUniquePoints(points)
+		fmt.Println("POINTS", points, "COUNT", len(points))
 	}
+	printPoints(points)
 }
 
 func getUniquePoints(points []point) []point {
@@ -87,4 +90,30 @@ func getUniquePoints(points []point) []point {
 		}
 	}
 	return uniquePoints
+}
+
+func printPoints(points []point) {
+	for y := 0; y < 8; y++ {
+		for x := 0; x < 40; x++ {
+			p := point{
+				x: x,
+				y: y,
+			}
+			if pointExists(p, points) {
+				fmt.Printf("*")
+			} else {
+				fmt.Printf(" ")
+			}
+		}
+		fmt.Printf("\n")
+	}
+}
+
+func pointExists(p point, points []point) bool {
+	for _, v := range points {
+		if v.x == p.x && v.y == p.y {
+			return true
+		}
+	}
+	return false
 }
