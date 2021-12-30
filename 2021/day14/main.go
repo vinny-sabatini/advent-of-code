@@ -14,6 +14,9 @@ import (
 // element. A transformation takes two characters from the polymer, and injects in the corresponding character between
 // those two characters. This has to be done for all characters in the polymer. For small-input.txt, the most frequent
 // charcter is B with 1749, and the least frequent character is H with 161, so the final answer is 1588.
+//
+// Day 14 challenge 2 does the same thing, but tracks out to 40 days. For small-input.txt, the most frequent character
+// is B with 2192039569602 and the least frequent is H with 3849876073 so the final answer is 2188189693529.
 func main() {
 	input, err := os.Open("./input.txt")
 	if err != nil {
@@ -33,38 +36,35 @@ func main() {
 		line := strings.Split(scanner.Text(), " -> ")
 		polymerLegend[line[0]] = line[1]
 	}
+	pairs := make(map[string]int)
+	elementCounter := make(map[string]int)
 
-	for i := 0; i < 10; i++ {
-		polymer = transformPolymer(polymer, polymerLegend)
-		fmt.Println("Length", len(polymer), "after", i+1)
-	}
-	fmt.Println(diffMostAndLeastFrequentElements(polymer))
-}
-
-func transformPolymer(polymer string, legend map[string]string) string {
-	var transformation string
 	for i := 0; i < len(polymer)-1; i++ {
-		key := fmt.Sprintf("%s%s", string(polymer[i]), string(polymer[i+1]))
-		transformation = transformation + string(polymer[i]) + legend[key]
+		elementCounter[string(polymer[i])]++
+		pairs[string(polymer[i])+string(polymer[i+1])]++
 	}
-	return transformation + string(polymer[len(polymer)-1])
-}
+	elementCounter[string(polymer[len(polymer)-1])]++
+	fmt.Println(pairs, elementCounter)
+	newPairs := pairs
 
-func diffMostAndLeastFrequentElements(polymer string) int {
-	tracker := make(map[string]int)
-	for _, element := range polymer {
-		if v, ok := tracker[string(element)]; !ok {
-			tracker[string(element)] = 1
-		} else {
-			tracker[string(element)] = v + 1
+	for i := 0; i < 40; i++ {
+		current := newPairs
+		newPairs = make(map[string]int)
+		for pair, count := range current {
+			pair1 := string(pair[0]) + string(polymerLegend[pair])
+			pair2 := string(polymerLegend[pair]) + string(pair[1])
+			newPairs[pair1] = newPairs[pair1] + count
+			newPairs[pair2] = newPairs[pair2] + count
+			elementCounter[polymerLegend[pair]] = elementCounter[polymerLegend[pair]] + count
 		}
+		fmt.Println(newPairs, elementCounter)
 	}
-
-	min := math.MaxInt
 	max := math.MinInt
-	for _, v := range tracker {
-		min = int(math.Min(float64(v), float64(min)))
+	min := math.MaxInt
+
+	for _, v := range elementCounter {
 		max = int(math.Max(float64(v), float64(max)))
+		min = int(math.Min(float64(v), float64(min)))
 	}
-	return max - min
+	fmt.Println(max - min)
 }
