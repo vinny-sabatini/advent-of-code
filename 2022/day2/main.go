@@ -1,6 +1,6 @@
 package main
 
-import "day1/cmd"
+import "day2/cmd"
 
 func main() {
 	cmd.Execute()
